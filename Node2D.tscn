@@ -4,19 +4,19 @@
 [ext_resource path="res://RigidBody2D.gd" type="Script" id=2]
 [ext_resource path="res://TRAVAblin.gd" type="Script" id=3]
 
-[sub_resource type="PhysicsMaterial" id=9]
+[sub_resource type="PhysicsMaterial" id=1]
 bounce = 2.0
 
-[sub_resource type="Gradient" id=1]
+[sub_resource type="Gradient" id=2]
 colors = PoolColorArray( 0.937255, 0.560784, 0.0784314, 1, 1, 1, 1, 1 )
 
-[sub_resource type="GradientTexture" id=2]
-gradient = SubResource( 1 )
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
 
-[sub_resource type="CircleShape2D" id=3]
+[sub_resource type="CircleShape2D" id=4]
 radius = 57.571
 
-[sub_resource type="PhysicsMaterial" id=8]
+[sub_resource type="PhysicsMaterial" id=5]
 
 [sub_resource type="Gradient" id=6]
 colors = PoolColorArray( 0.0509804, 0.87451, 0.101961, 1, 0.694118, 0.819608, 0.0823529, 1 )
@@ -24,30 +24,30 @@ colors = PoolColorArray( 0.0509804, 0.87451, 0.101961, 1, 0.694118, 0.819608, 0.
 [sub_resource type="GradientTexture" id=7]
 gradient = SubResource( 6 )
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=8]
 extents = Vector2( 180.919, 115.792 )
 
-[node name="Node2D" type="Node2D"]
+[node name="Main_node2d" type="Node2D"]
 script = ExtResource( 1 )
 
 [node name="KrolikVashyMat" type="RigidBody2D" parent="."]
 position = Vector2( 133.869, 641.029 )
-physics_material_override = SubResource( 9 )
+physics_material_override = SubResource( 1 )
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="KrolikVashyMat"]
 position = Vector2( 19.0107, -7.35147 )
 scale = Vector2( 0.0959104, 179.469 )
-texture = SubResource( 2 )
+texture = SubResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KrolikVashyMat"]
 visible = false
 position = Vector2( 49.2819, -4.92804 )
-shape = SubResource( 3 )
+shape = SubResource( 4 )
 
 [node name="TRAVAblin" type="StaticBody2D" parent="."]
 position = Vector2( 1021.04, 284.689 )
-physics_material_override = SubResource( 8 )
+physics_material_override = SubResource( 5 )
 script = ExtResource( 3 )
 
 [node name="Sprite" type="Sprite" parent="TRAVAblin"]
@@ -57,5 +57,5 @@ texture = SubResource( 7 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TRAVAblin"]
 position = Vector2( 134.552, -129.873 )
-shape = SubResource( 5 )
+shape = SubResource( 8 )
 disabled = true
