@@ -11,7 +11,7 @@ enum ACT {
 }
 
 var health
-onready var TARGET = get_node("../TRAVAblin").position
+#onready var TARGET = get_node("../TRAVAblin").position
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -35,6 +35,7 @@ func rabbit_move():
 	var grass_list = get_tree().get_nodes_in_group("grass")
 	var distance = SEARCH_RANGE
 	var direction
+	var TARGET
 	for grass in grass_list:
 		var grass_distance = self.position.distance_to(grass.position)
 		if distance > grass_distance:
