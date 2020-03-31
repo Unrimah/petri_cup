@@ -2,7 +2,7 @@ extends Node2D
 
 const NUM_GRASS = 10
 const NUM_RABBITS = 3
-const GRASS_DELAY = 200
+const GRASS_DELAY = 100
 
 var grass_scene = preload("res://GrassBody2D.tscn")
 var rabbit_scene = preload("res://RabbitBody2D.tscn")
@@ -39,3 +39,9 @@ func _process(delta):
 		grass_node.position.y = randi() % 600
 		grass_node.add_to_group("grass")
 		add_child(grass_node)
+
+func create_new_rabbit(position):
+	var rabbit_node = rabbit_scene.instance()
+	rabbit_node.position = position
+	rabbit_node.add_to_group("rabbits")
+	add_child(rabbit_node)
