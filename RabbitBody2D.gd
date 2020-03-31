@@ -1,6 +1,6 @@
 extends RigidBody2D
 
-const MAX_HEALTH = 100
+const MAX_HEALTH = 1000
 const SEARCH_RANGE = 500
 const EATING_DISTANCE = 5
 
@@ -31,15 +31,12 @@ func _process(delta):
 			rabbit_to_grass()		
 
 func select_action():
-	while self.health <= 100 and self.health > 0.1:
-		self.health -= 0.1
-		if self.health < (MAX_HEALTH / 2):
-			return ACT.TO_GRASS
-		elif self.health >= (MAX_HEALTH / 2):
+	self.health -= 1
+	if self.health >= (MAX_HEALTH / 2):
 			return ACT.WALK
-		else:
-			return ACT.DIE
-	
+	if self.health < (MAX_HEALTH / 2) and self.health > 1:
+			return ACT.TO_GRASS
+	return ACT.DIE
 	
 	
 func rabbit_to_grass():
@@ -74,13 +71,14 @@ func rabbit_walk():
 
 func rabbit_eat(food):
 	food.free()
-	self.health += 10
+	self.health += 50
 	
 func set_place(x, y):
 	self.position = Vector2(x, y)
 	
 func rabbit_die():
-	self.free()
+	pass
+	
 	
 
 
