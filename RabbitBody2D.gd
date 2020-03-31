@@ -8,7 +8,7 @@ enum ACT {
 	DIE,
 	WALK,
 	EAT,
-	SEARCH_GRASS
+	TO_GRASS
 }
 
 var health
@@ -24,15 +24,25 @@ func _process(delta):
 		ACT.WALK:
 			rabbit_walk()
 		ACT.EAT:
-			rabbit_satiety()
+			pass
 		ACT.DIE:
-			rabbit_die()		
+			rabbit_die()
+		ACT.TO_GRASS:
+			rabbit_to_grass()		
 
 func select_action():
-	return ACT.SEARCH_GRASS
-#	return ACT.DIE
+	while self.health <= 100 and self.health > 0.1:
+		self.health -= 0.1
+		if self.health < (MAX_HEALTH / 2):
+			return ACT.TO_GRASS
+		elif self.health >= (MAX_HEALTH / 2):
+			return ACT.WALK
+		else:
+			return ACT.DIE
 	
-func rabbit_search_grass():
+	
+	
+func rabbit_to_grass():
 	var grass_list = get_tree().get_nodes_in_group("grass")
 	var distance = SEARCH_RANGE
 	var direction
@@ -59,27 +69,20 @@ func rabbit_search_grass():
 	else:
 		global_translate(direction)
 func rabbit_walk():
-	var self_position = self.position 
-	self.position.x += 1
-	self.position.y += 1
-	return self_position
+	var direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
+	global_translate(direction)
 
 func rabbit_eat(food):
 	food.free()
+	self.health += 10
 	
 func set_place(x, y):
 	self.position = Vector2(x, y)
 	
 func rabbit_die():
-	pass
-func rabbit_satiety():# The function is responsible for the fullness of the rabbit
-	var satiety = MAX_HEALTH
-	while satiety <= MAX_HEALTH:
-		satiety -= 1
-		if satiety < (MAX_HEALTH / 2):
-			rabbit_search_grass()
-		else: 
-			rabbit_walk()
+	self.free()
+	
+
 
 	
 	
