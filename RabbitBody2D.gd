@@ -1,18 +1,19 @@
 extends RigidBody2D
 
 const MAX_HEALTH = 1000
+const HUNGRY_HEALTH = 700
 const SEARCH_RANGE = 500
 const EATING_DISTANCE = 5
+const GRASS_FEED_RATE = 300
 
 enum ACT {
 	DIE,
 	WALK,
-	EAT,
+#	EAT,
 	TO_GRASS
 }
 
 var health
-#onready var TARGET = get_node("../TRAVAblin").position
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -23,8 +24,8 @@ func _process(delta):
 	match select_action():
 		ACT.WALK:
 			rabbit_walk()
-		ACT.EAT:
-			pass
+#		ACT.EAT:
+#			pass
 		ACT.DIE:
 			rabbit_die()
 		ACT.TO_GRASS:
@@ -32,11 +33,11 @@ func _process(delta):
 
 func select_action():
 	self.health -= 1
-	if self.health >= (MAX_HEALTH / 2):
-			return ACT.WALK
-	if self.health < (MAX_HEALTH / 2) and self.health > 1:
-			return ACT.TO_GRASS
-	return ACT.DIE
+	if self.health >= HUNGRY_HEALTH:
+		return ACT.WALK
+	if self.health <=  1:
+		return ACT.DIE
+	return ACT.TO_GRASS
 	
 	
 func rabbit_to_grass():
@@ -65,19 +66,22 @@ func rabbit_to_grass():
 		rabbit_eat(TARGET)
 	else:
 		global_translate(direction)
+
 func rabbit_walk():
 	var direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	global_translate(direction)
 
 func rabbit_eat(food):
 	food.free()
-	self.health += 50
+	self.health += GRASS_FEED_RATE
+	if health > MAX_HEALTH:
+		health = MAX_HEALTH
 	
 func set_place(x, y):
 	self.position = Vector2(x, y)
 	
 func rabbit_die():
-	pass
+	queue_free()
 	
 	
 
