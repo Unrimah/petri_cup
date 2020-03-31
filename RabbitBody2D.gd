@@ -6,8 +6,9 @@ const EATING_DISTANCE = 5
 
 enum ACT {
 	DIE,
-	MOVE,
-	EAT
+	WALK,
+	EAT,
+	SEARCH_GRASS
 }
 
 var health
@@ -20,18 +21,18 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	match select_action():
-		ACT.MOVE:
-			rabbit_move()
+		ACT.WALK:
+			rabbit_walk()
 		ACT.EAT:
-			pass
+			rabbit_satiety()
 		ACT.DIE:
 			rabbit_die()		
 
 func select_action():
-	return ACT.MOVE
+	return ACT.SEARCH_GRASS
 #	return ACT.DIE
 	
-func rabbit_move():
+func rabbit_search_grass():
 	var grass_list = get_tree().get_nodes_in_group("grass")
 	var distance = SEARCH_RANGE
 	var direction
@@ -57,6 +58,11 @@ func rabbit_move():
 		rabbit_eat(TARGET)
 	else:
 		global_translate(direction)
+func rabbit_walk():
+	var self_position = self.position 
+	self.position.x += 1
+	self.position.y += 1
+	return self_position
 
 func rabbit_eat(food):
 	food.free()
@@ -66,3 +72,14 @@ func set_place(x, y):
 	
 func rabbit_die():
 	pass
+func rabbit_satiety():# The function is responsible for the fullness of the rabbit
+	var satiety = MAX_HEALTH
+	while satiety <= MAX_HEALTH:
+		satiety -= 1
+		if satiety < (MAX_HEALTH / 2):
+			rabbit_search_grass()
+		else: 
+			rabbit_walk()
+
+	
+	

@@ -1,15 +1,15 @@
 [gd_scene load_steps=3 format=2]
 
-[sub_resource type="Gradient" id=2]
+[sub_resource type="Gradient" id=1]
 offsets = PoolRealArray( 0 )
 colors = PoolColorArray( 0.153809, 0.546875, 0.261288, 1 )
 
-[sub_resource type="GradientTexture" id=1]
-gradient = SubResource( 2 )
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
 
 [node name="GrassBody2D" type="StaticBody2D"]
 
 [node name="Sprite" type="Sprite" parent="."]
-texture = SubResource( 1 )
+texture = SubResource( 2 )
 region_enabled = true
 region_rect = Rect2( -25, -25, 50, 50 )
