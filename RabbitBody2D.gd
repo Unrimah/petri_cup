@@ -9,7 +9,7 @@ const COPULATING_DISTANCE = 40
 const GRASS_FEED_RATE = 500
 const COPULATION_LOSS = HUNGRY_HEALTH / 2
 const COPULATION_PERIOD = 300
-const POPULATION_LIMIT = 20
+const POPULATION_LIMIT = 16
 const LIFE_PERIOD = COPULATION_PERIOD * 20
 
 enum ACT {
@@ -132,7 +132,8 @@ func rabbit_copulate(rabbit):
 	if rabbit.copulation_timer > 0:
 		return
 	copulation_timer = COPULATION_PERIOD
-	self.health -= COPULATION_LOSS
+	health -= COPULATION_LOSS
+	rabbit.copulation_timer = COPULATION_PERIOD
 	rabbit.health -= COPULATION_LOSS
 	get_node("..").create_new_rabbit(self.position)
 	
@@ -141,9 +142,3 @@ func set_place(x, y):
 	
 func rabbit_die():
 	queue_free()
-	
-	
-
-
-	
-	

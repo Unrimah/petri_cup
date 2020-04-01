@@ -131,7 +131,8 @@ func wolf_copulate(wolf):
 	if wolf.copulation_timer > 0:
 		return
 	copulation_timer = COPULATION_PERIOD
-	self.health -= COPULATION_LOSS
+	health -= COPULATION_LOSS
+	wolf.copulation_timer = COPULATION_PERIOD
 	wolf.health -= COPULATION_LOSS
 	get_node("..").create_new_wolf(self.position)
 	
@@ -140,9 +141,3 @@ func set_place(x, y):
 	
 func wolf_die():
 	queue_free()
-	
-	
-
-
-	
-	
