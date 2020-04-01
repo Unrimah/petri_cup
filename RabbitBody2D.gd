@@ -9,6 +9,8 @@ const COPULATING_DISTANCE = 40
 const GRASS_FEED_RATE = 500
 const COPULATION_LOSS = HUNGRY_HEALTH / 2
 const COPULATION_PERIOD = 300
+const POPULATION_LIMIT = 20
+const LIFE_PERIOD = COPULATION_PERIOD * 20
 
 enum ACT {
 	DIE,
@@ -19,11 +21,13 @@ enum ACT {
 
 var health
 var copulation_timer
+var life_timer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	health = HUNGRY_HEALTH
 	copulation_timer = COPULATION_PERIOD
+	life_timer = LIFE_PERIOD
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -38,6 +42,9 @@ func _process(delta):
 			rabbit_to_grass()		
 
 func select_action():
+	life_timer -= 1
+	if life_timer == 0:
+		return ACT.DIE
 	health -= 1
 	if copulation_timer > 0:
 		copulation_timer -= 1
@@ -82,16 +89,19 @@ func rabbit_to_fuck():
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
+	var animals_in_range = 1
 	for rabbit in rabbits_list:
 		if rabbit.get_instance_id() == self.get_instance_id():
 			continue
+		var rabbit_distance = self.position.distance_to(rabbit.position)
+		if rabbit_distance < SEARCH_RANGE:
+			animals_in_range += 1
 		if rabbit.copulation_timer > 0:
 			continue
-		var rabbit_distance = self.position.distance_to(rabbit.position)
 		if distance > rabbit_distance:
 			distance = rabbit_distance
 			TARGET = rabbit
-	if distance == SEARCH_RANGE:
+	if (distance == SEARCH_RANGE) or (animals_in_range >= POPULATION_LIMIT):
 		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	else:
 		direction = Vector2(0,0)
@@ -103,7 +113,7 @@ func rabbit_to_fuck():
 			direction.x = -1
 		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
 			direction.y = -1
-	if distance < COPULATING_DISTANCE:
+	if (animals_in_range < POPULATION_LIMIT) and (distance < COPULATING_DISTANCE):
 		rabbit_copulate(TARGET)
 	else:
 		global_translate(direction)

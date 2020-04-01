@@ -7,8 +7,9 @@ const SEARCH_RANGE = 700
 const EATING_DISTANCE = 40
 const COPULATING_DISTANCE = 40
 const COPULATION_LOSS = HUNGRY_HEALTH / 2
-const COPULATION_PERIOD = 3000
+const COPULATION_PERIOD = 2000
 const POPULATION_LIMIT = 4
+const LIFE_PERIOD = COPULATION_PERIOD * 10
 
 enum ACT {
 	DIE,
@@ -19,11 +20,13 @@ enum ACT {
 
 var health
 var copulation_timer
+var life_timer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	health = HUNGRY_HEALTH
 	copulation_timer = COPULATION_PERIOD
+	life_timer = LIFE_PERIOD
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -38,6 +41,9 @@ func _process(delta):
 			wolf_to_eat()		
 
 func select_action():
+	life_timer -= 1
+	if life_timer == 0:
+		return ACT.DIE
 	health -= 1
 	if copulation_timer > 0:
 		copulation_timer -= 1
