@@ -1,12 +1,14 @@
 extends RigidBody2D
 
-const MAX_HEALTH = 5000
-const FUCKING_HEALTH = 700
-const HUNGRY_HEALTH = 600
+const MAX_HEALTH = 1500
+const FUCKING_HEALTH = 1200
+const HUNGRY_HEALTH = 700
 const SEARCH_RANGE = 700
 const EATING_DISTANCE = 40
 const COPULATING_DISTANCE = 40
 const COPULATION_LOSS = HUNGRY_HEALTH / 2
+const COPULATION_PERIOD = 3000
+const POPULATION_LIMIT = 4
 
 enum ACT {
 	DIE,
@@ -16,10 +18,12 @@ enum ACT {
 }
 
 var health
+var copulation_timer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	self.health = HUNGRY_HEALTH
+	health = HUNGRY_HEALTH
+	copulation_timer = COPULATION_PERIOD
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -34,12 +38,14 @@ func _process(delta):
 			wolf_to_eat()		
 
 func select_action():
-	self.health -= 1
-	if self.health >= FUCKING_HEALTH:
+	health -= 1
+	if copulation_timer > 0:
+		copulation_timer -= 1
+	elif health >= FUCKING_HEALTH:
 		return ACT.COPULATE
-	if self.health >= HUNGRY_HEALTH:
+	if health >= HUNGRY_HEALTH:
 		return ACT.WALK
-	if self.health <=  1:
+	if health <  1:
 		return ACT.DIE
 	return ACT.TO_EAT
 	
@@ -76,14 +82,19 @@ func wolf_to_fuck():
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
+	var animals_in_range = 0
 	for wolf in wolves_list:
 		if wolf.get_instance_id() == self.get_instance_id():
 			continue
 		var wolf_distance = self.position.distance_to(wolf.position)
+		if wolf_distance < SEARCH_RANGE:
+			animals_in_range += 1
+		if wolf.copulation_timer > 0:
+			continue
 		if distance > wolf_distance:
 			distance = wolf_distance
 			TARGET = wolf
-	if distance == SEARCH_RANGE:
+	if (distance == SEARCH_RANGE) or (animals_in_range >= POPULATION_LIMIT):
 		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	else:
 		direction = Vector2(0,0)
@@ -95,7 +106,7 @@ func wolf_to_fuck():
 			direction.x = -1
 		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
 			direction.y = -1
-	if distance < COPULATING_DISTANCE:
+	if (animals_in_range < POPULATION_LIMIT) and (distance < COPULATING_DISTANCE):
 		wolf_copulate(TARGET)
 	else:
 		global_translate(direction)
@@ -105,12 +116,15 @@ func wolf_walk():
 	global_translate(direction)
 
 func wolf_eat(food):
-	self.health += food.health
+	self.health += 2 * food.health
 	if health > MAX_HEALTH:
 		health = MAX_HEALTH
 	food.queue_free()
 	
 func wolf_copulate(wolf):
+	if wolf.copulation_timer > 0:
+		return
+	copulation_timer = COPULATION_PERIOD
 	self.health -= COPULATION_LOSS
 	wolf.health -= COPULATION_LOSS
 	get_node("..").create_new_wolf(self.position)

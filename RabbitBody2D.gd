@@ -2,12 +2,13 @@ extends RigidBody2D
 
 const MAX_HEALTH = 1000
 const FUCKING_HEALTH = 700
-const HUNGRY_HEALTH = 600
+const HUNGRY_HEALTH = 500
 const SEARCH_RANGE = 500
 const EATING_DISTANCE = 5
 const COPULATING_DISTANCE = 40
 const GRASS_FEED_RATE = 500
 const COPULATION_LOSS = HUNGRY_HEALTH / 2
+const COPULATION_PERIOD = 400
 
 enum ACT {
 	DIE,
@@ -17,10 +18,12 @@ enum ACT {
 }
 
 var health
+var copulation_timer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	self.health = HUNGRY_HEALTH
+	health = HUNGRY_HEALTH
+	copulation_timer = COPULATION_PERIOD
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -35,12 +38,14 @@ func _process(delta):
 			rabbit_to_grass()		
 
 func select_action():
-	self.health -= 1
-	if self.health >= FUCKING_HEALTH:
+	health -= 1
+	if copulation_timer > 0:
+		copulation_timer -= 1
+	elif health >= FUCKING_HEALTH:
 		return ACT.COPULATE
 	if self.health >= HUNGRY_HEALTH:
 		return ACT.WALK
-	if self.health <=  1:
+	if self.health <  1:
 		return ACT.DIE
 	return ACT.TO_EAT
 	
@@ -80,6 +85,8 @@ func rabbit_to_fuck():
 	for rabbit in rabbits_list:
 		if rabbit.get_instance_id() == self.get_instance_id():
 			continue
+		if rabbit.copulation_timer > 0:
+			continue
 		var rabbit_distance = self.position.distance_to(rabbit.position)
 		if distance > rabbit_distance:
 			distance = rabbit_distance
@@ -112,6 +119,9 @@ func rabbit_eat(food):
 		health = MAX_HEALTH
 
 func rabbit_copulate(rabbit):
+	if rabbit.copulation_timer > 0:
+		return
+	copulation_timer = COPULATION_PERIOD
 	self.health -= COPULATION_LOSS
 	rabbit.health -= COPULATION_LOSS
 	get_node("..").create_new_rabbit(self.position)

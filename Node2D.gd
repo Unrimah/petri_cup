@@ -1,8 +1,8 @@
 extends Node2D
 
-const NUM_GRASS = 15
+const NUM_GRASS = 20
 const NUM_RABBITS = 10
-const NUM_WOLVES = 2
+const NUM_WOLVES = 3
 const GRASS_DELAY = 25
 
 var grass_scene = preload("res://GrassBody2D.tscn")
