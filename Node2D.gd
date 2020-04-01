@@ -1,11 +1,13 @@
 extends Node2D
 
-const NUM_GRASS = 10
-const NUM_RABBITS = 3
-const GRASS_DELAY = 100
+const NUM_GRASS = 15
+const NUM_RABBITS = 10
+const NUM_WOLVES = 2
+const GRASS_DELAY = 25
 
 var grass_scene = preload("res://GrassBody2D.tscn")
 var rabbit_scene = preload("res://RabbitBody2D.tscn")
+var wolf_scene = preload("res://WolfBody2D.tscn")
 
 var grass_counter
 
@@ -29,6 +31,13 @@ func _ready():
 		rabbit_node.add_to_group("rabbits")
 		add_child(rabbit_node)
 	
+	for i in NUM_WOLVES:
+		var wolf_node = wolf_scene.instance()
+		wolf_node.position.x = randi() % 1200
+		wolf_node.position.y = randi() % 600
+		wolf_node.add_to_group("wolves")
+		add_child(wolf_node)
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	grass_counter += 1
@@ -45,3 +54,9 @@ func create_new_rabbit(position):
 	rabbit_node.position = position
 	rabbit_node.add_to_group("rabbits")
 	add_child(rabbit_node)
+
+func create_new_wolf(position):
+	var wolf_node = wolf_scene.instance()
+	wolf_node.position = position
+	wolf_node.add_to_group("wolves")
+	add_child(wolf_node)

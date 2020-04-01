@@ -1,12 +1,11 @@
 extends RigidBody2D
 
-const MAX_HEALTH = 1000
+const MAX_HEALTH = 5000
 const FUCKING_HEALTH = 700
 const HUNGRY_HEALTH = 600
-const SEARCH_RANGE = 500
-const EATING_DISTANCE = 5
+const SEARCH_RANGE = 700
+const EATING_DISTANCE = 40
 const COPULATING_DISTANCE = 40
-const GRASS_FEED_RATE = 500
 const COPULATION_LOSS = HUNGRY_HEALTH / 2
 
 enum ACT {
@@ -26,13 +25,13 @@ func _ready():
 func _process(delta):
 	match select_action():
 		ACT.WALK:
-			rabbit_walk()
+			wolf_walk()
 		ACT.COPULATE:
-			rabbit_to_fuck()
+			wolf_to_fuck()
 		ACT.DIE:
-			rabbit_die()
+			wolf_die()
 		ACT.TO_EAT:
-			rabbit_to_grass()		
+			wolf_to_eat()		
 
 func select_action():
 	self.health -= 1
@@ -45,41 +44,12 @@ func select_action():
 	return ACT.TO_EAT
 	
 	
-func rabbit_to_grass():
-	var grass_list = get_tree().get_nodes_in_group("grass")
+func wolf_to_eat():
+	var rabbit_list = get_tree().get_nodes_in_group("rabbits")
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
-	for grass in grass_list:
-		var grass_distance = self.position.distance_to(grass.position)
-		if distance > grass_distance:
-			distance = grass_distance
-			TARGET = grass
-	if distance == SEARCH_RANGE:
-		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
-	else:
-		direction = Vector2(0,0)
-		if (self.position.x < TARGET.position.x) and (self.position.x < 1200):
-			direction.x = 1
-		if (self.position.y < TARGET.position.y) and (self.position.y < 600):
-			direction.y = 1
-		if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
-			direction.x = -1
-		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
-			direction.y = -1
-	if distance < EATING_DISTANCE:
-		rabbit_eat(TARGET)
-	else:
-		global_translate(direction)
-
-func rabbit_to_fuck():
-	var rabbits_list = get_tree().get_nodes_in_group("rabbits")
-	var distance = SEARCH_RANGE
-	var direction
-	var TARGET
-	for rabbit in rabbits_list:
-		if rabbit.get_instance_id() == self.get_instance_id():
-			continue
+	for rabbit in rabbit_list:
 		var rabbit_distance = self.position.distance_to(rabbit.position)
 		if distance > rabbit_distance:
 			distance = rabbit_distance
@@ -96,30 +66,59 @@ func rabbit_to_fuck():
 			direction.x = -1
 		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
 			direction.y = -1
-	if distance < COPULATING_DISTANCE:
-		rabbit_copulate(TARGET)
+	if distance < EATING_DISTANCE:
+		wolf_eat(TARGET)
 	else:
 		global_translate(direction)
 
-func rabbit_walk():
+func wolf_to_fuck():
+	var wolves_list = get_tree().get_nodes_in_group("wolves")
+	var distance = SEARCH_RANGE
+	var direction
+	var TARGET
+	for wolf in wolves_list:
+		if wolf.get_instance_id() == self.get_instance_id():
+			continue
+		var wolf_distance = self.position.distance_to(wolf.position)
+		if distance > wolf_distance:
+			distance = wolf_distance
+			TARGET = wolf
+	if distance == SEARCH_RANGE:
+		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
+	else:
+		direction = Vector2(0,0)
+		if (self.position.x < TARGET.position.x) and (self.position.x < 1200):
+			direction.x = 1
+		if (self.position.y < TARGET.position.y) and (self.position.y < 600):
+			direction.y = 1
+		if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
+			direction.x = -1
+		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
+			direction.y = -1
+	if distance < COPULATING_DISTANCE:
+		wolf_copulate(TARGET)
+	else:
+		global_translate(direction)
+
+func wolf_walk():
 	var direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	global_translate(direction)
 
-func rabbit_eat(food):
-	food.free()
-	self.health += GRASS_FEED_RATE
+func wolf_eat(food):
+	self.health += food.health
 	if health > MAX_HEALTH:
 		health = MAX_HEALTH
-
-func rabbit_copulate(rabbit):
+	food.queue_free()
+	
+func wolf_copulate(wolf):
 	self.health -= COPULATION_LOSS
-	rabbit.health -= COPULATION_LOSS
-	get_node("..").create_new_rabbit(self.position)
+	wolf.health -= COPULATION_LOSS
+	get_node("..").create_new_wolf(self.position)
 	
 func set_place(x, y):
 	self.position = Vector2(x, y)
 	
-func rabbit_die():
+func wolf_die():
 	queue_free()
 	
 	
