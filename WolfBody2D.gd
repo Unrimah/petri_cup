@@ -82,7 +82,7 @@ func wolf_to_fuck():
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
-	var animals_in_range = 0
+	var animals_in_range = 1
 	for wolf in wolves_list:
 		if wolf.get_instance_id() == self.get_instance_id():
 			continue
