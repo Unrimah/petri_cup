@@ -1,6 +1,10 @@
 extends RigidBody2D
 
+var X_RES
+var Y_RES
+
 var MAX_HEALTH
+var BASE_HEALTH
 var FUCKING_HEALTH
 var HUNGRY_HEALTH
 var SEARCH_RANGE
@@ -24,11 +28,17 @@ var health
 var copulation_timer
 var life_timer
 
+func _init_animal():
+	pass
+	
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	_init_animal()
 	health = HUNGRY_HEALTH
 	copulation_timer = COPULATION_PERIOD
 	life_timer = LIFE_PERIOD
+	X_RES = get_node("..").X_RES
+	Y_RES = get_node("..").Y_RES
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -59,7 +69,7 @@ func select_action():
 	
 	
 func animal_to_eat():
-	var food_list = get_tree().get_nodes_in_group("food??")#Groups of food
+	var food_list = get_tree().get_nodes_in_group(FOOD_GROUP)#Groups of food
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
@@ -72,9 +82,9 @@ func animal_to_eat():
 		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	else:
 		direction = Vector2(0,0)
-		if (self.position.x < TARGET.position.x) and (self.position.x < 1200):
+		if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
 			direction.x = 1
-		if (self.position.y < TARGET.position.y) and (self.position.y < 600):
+		if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
 			direction.y = 1
 		if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
 			direction.x = -1
@@ -86,7 +96,7 @@ func animal_to_eat():
 		global_translate(direction)
 
 func animal_to_fuck():
-	var animals_list = get_tree().get_nodes_in_group("wolve")
+	var animals_list = get_tree().get_nodes_in_group(SELF_GROUP)
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
@@ -106,9 +116,9 @@ func animal_to_fuck():
 		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	else:
 		direction = Vector2(0,0)
-		if (self.position.x < TARGET.position.x) and (self.position.x < 1200):
+		if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
 			direction.x = 1
-		if (self.position.y < TARGET.position.y) and (self.position.y < 600):
+		if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
 			direction.y = 1
 		if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
 			direction.x = -1
@@ -124,10 +134,13 @@ func animal_walk():
 	global_translate(direction)
 
 func animal_eat(food):
-	self.health += 2 * food.health
+	health += food.BASE_HEALTH + food.health
 	if health > MAX_HEALTH:
 		health = MAX_HEALTH
 	food.queue_free()
+	
+func _create_new_animal(position):
+	pass
 	
 func animal_copulate(animal):
 	if animal.copulation_timer > 0:
@@ -136,7 +149,7 @@ func animal_copulate(animal):
 	health -= COPULATION_LOSS
 	animal.copulation_timer = COPULATION_PERIOD
 	animal.health -= COPULATION_LOSS
-	get_node("..").create_new_animal(self.position)
+	_create_new_animal(self.position)
 	
 func set_place(x, y):
 	self.position = Vector2(x, y)
