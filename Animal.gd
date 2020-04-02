@@ -1,15 +1,15 @@
 extends RigidBody2D
 
-const MAX_HEALTH = 1500
-const FUCKING_HEALTH = 1200
-const HUNGRY_HEALTH = 700
-const SEARCH_RANGE = 700
-const EATING_DISTANCE = 40
-const COPULATING_DISTANCE = 40
-const COPULATION_LOSS = HUNGRY_HEALTH / 2
-const COPULATION_PERIOD = 2000
-const POPULATION_LIMIT = 4
-const LIFE_PERIOD = COPULATION_PERIOD * 10
+var MAX_HEALTH
+var FUCKING_HEALTH
+var HUNGRY_HEALTH
+var SEARCH_RANGE
+var EATING_DISTANCE
+var COPULATING_DISTANCE
+var COPULATION_LOSS
+var COPULATION_PERIOD
+var POPULATION_LIMIT
+var LIFE_PERIOD
 
 enum ACT {
 	DIE,
@@ -32,13 +32,13 @@ func _ready():
 func _process(delta):
 	match select_action():
 		ACT.WALK:
-			wolf_walk()
+			animal_walk()
 		ACT.COPULATE:
-			wolf_to_fuck()
+			animal_to_fuck()
 		ACT.DIE:
-			wolf_die()
+			animal_die()
 		ACT.TO_EAT:
-			wolf_to_eat()		
+			animal_to_eat()		
 
 func select_action():
 	life_timer -= 1
@@ -56,16 +56,16 @@ func select_action():
 	return ACT.TO_EAT
 	
 	
-func wolf_to_eat():
-	var rabbit_list = get_tree().get_nodes_in_group("rabbits")
+func animal_to_eat():
+	var food_list = get_tree().get_nodes_in_group("food??")#Groups of food
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
-	for rabbit in rabbit_list:
-		var rabbit_distance = self.position.distance_to(rabbit.position)
-		if distance > rabbit_distance:
-			distance = rabbit_distance
-			TARGET = rabbit
+	for food in food_list:
+		var food_distance = self.position.distance_to(food.position)
+		if distance > food_distance:
+			distance = food_distance
+			TARGET = food
 	if distance == SEARCH_RANGE:
 		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	else:
@@ -79,27 +79,27 @@ func wolf_to_eat():
 		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
 			direction.y = -1
 	if distance < EATING_DISTANCE:
-		wolf_eat(TARGET)
+		animal_eat(TARGET)
 	else:
 		global_translate(direction)
 
-func wolf_to_fuck():
-	var wolves_list = get_tree().get_nodes_in_group("wolves")
+func animal_to_fuck():
+	var animals_list = get_tree().get_nodes_in_group("wolve")
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
 	var animals_in_range = 1
-	for wolf in wolves_list:
-		if wolf.get_instance_id() == self.get_instance_id():
+	for animal in animals_list:
+		if animal.get_instance_id() == self.get_instance_id():
 			continue
-		var wolf_distance = self.position.distance_to(wolf.position)
-		if wolf_distance < SEARCH_RANGE:
+		var animal_distance = self.position.distance_to(animal.position)
+		if animal_distance < SEARCH_RANGE:
 			animals_in_range += 1
-		if wolf.copulation_timer > 0:
+		if animal.copulation_timer > 0:
 			continue
-		if distance > wolf_distance:
-			distance = wolf_distance
-			TARGET = wolf
+		if distance > animal_distance:
+			distance = animal_distance
+			TARGET = animal
 	if (distance == SEARCH_RANGE) or (animals_in_range >= POPULATION_LIMIT):
 		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	else:
@@ -113,31 +113,32 @@ func wolf_to_fuck():
 		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
 			direction.y = -1
 	if (animals_in_range < POPULATION_LIMIT) and (distance < COPULATING_DISTANCE):
-		wolf_copulate(TARGET)
+		animal_copulate(TARGET)
 	else:
 		global_translate(direction)
 
-func wolf_walk():
+func animal_walk():
 	var direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
 	global_translate(direction)
 
-func wolf_eat(food):
+func animal_eat(food):
 	self.health += 2 * food.health
 	if health > MAX_HEALTH:
 		health = MAX_HEALTH
 	food.queue_free()
 	
-func wolf_copulate(wolf):
-	if wolf.copulation_timer > 0:
+func animal_copulate(animal):
+	if animal.copulation_timer > 0:
 		return
 	copulation_timer = COPULATION_PERIOD
 	health -= COPULATION_LOSS
-	wolf.copulation_timer = COPULATION_PERIOD
-	wolf.health -= COPULATION_LOSS
-	get_node("..").create_new_wolf(self.position)
+	animal.copulation_timer = COPULATION_PERIOD
+	animal.health -= COPULATION_LOSS
+	get_node("..").create_new_animal(self.position)
 	
 func set_place(x, y):
 	self.position = Vector2(x, y)
 	
-func wolf_die():
+func animal_die():
 	queue_free()
+
