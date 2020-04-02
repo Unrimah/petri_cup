@@ -4,5 +4,5 @@
 
 [node name="Animals" type="Node2D"]
 
-[node name="Animal" type="RigidBody2D" parent="."]
+[node name="Animal general" type="RigidBody2D" parent="."]
 script = ExtResource( 1 )
