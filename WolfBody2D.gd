@@ -122,7 +122,7 @@ func wolf_walk():
 	global_translate(direction)
 
 func wolf_eat(food):
-	self.health += 2 * food.health
+	self.health += food.health
 	if health > MAX_HEALTH:
 		health = MAX_HEALTH
 	food.queue_free()
