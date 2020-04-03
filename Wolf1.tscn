@@ -1,0 +1,40 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://wolf_skin2.png" type="Texture" id=1]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends \"res://Animal.gd\"
+
+func _ready():
+	add_to_group(\"wolves\")
+	
+func _init_animal():
+	MAX_HEALTH = 1500
+	BASE_HEALTH = MAX_HEALTH / 2
+	FUCKING_HEALTH = 1200
+	HUNGRY_HEALTH = 700
+	SEARCH_RANGE = 700
+	EATING_DISTANCE = 40
+	COPULATING_DISTANCE = 40
+	COPULATION_LOSS = HUNGRY_HEALTH / 2
+	COPULATION_PERIOD = 2000
+	POPULATION_LIMIT = 4
+	LIFE_PERIOD = COPULATION_PERIOD * 10
+	SELF_GROUP = \"wolves\"
+	FOOD_GROUP = \"rabbits\"
+	
+func _create_new_animal(position):
+	get_node(\"..\").create_new_wolf(position)
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 25, 25 )
+
+[node name="Wolf1" type="RigidBody2D"]
+script = SubResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 2 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
