@@ -8,7 +8,7 @@ const NUM_RABBITS = 10
 const NUM_WOLVES = 2
 const GRASS_DELAY = 25
 
-var grass_scene = preload("res://GrassBody2D.tscn")
+var grass_scene = preload("res://Grass1.tscn")
 var rabbit_scene = preload("res://Rabbit1.tscn")
 var wolf_scene = preload("res://Wolf1.tscn")
 
@@ -21,11 +21,8 @@ func _ready():
 	grass_counter = 0
 	
 	for i in NUM_GRASS:
-		var grass_node = grass_scene.instance()
-		grass_node.position.x = randi() % X_RES
-		grass_node.position.y = randi() % Y_RES
-		grass_node.add_to_group("grass")
-		add_child(grass_node)
+		var position = Vector2(randi() % X_RES, randi() % Y_RES)
+		create_new_grass(position)
 	
 	for i in NUM_RABBITS:
 		var position = Vector2(randi() % X_RES, randi() % Y_RES)
@@ -40,11 +37,13 @@ func _process(delta):
 	grass_counter += 1
 	if grass_counter >= GRASS_DELAY:
 		grass_counter = 0
-		var grass_node = grass_scene.instance()
-		grass_node.position.x = randi() % X_RES
-		grass_node.position.y = randi() % Y_RES
-		grass_node.add_to_group("grass")
-		add_child(grass_node)
+		var position = Vector2(randi() % X_RES, randi() % Y_RES)
+		create_new_grass(position)
+
+func create_new_grass(position):
+	var grass_node = grass_scene.instance()
+	grass_node.position = position
+	add_child(grass_node)
 
 func create_new_rabbit(position):
 	var rabbit_node = rabbit_scene.instance()

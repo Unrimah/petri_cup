@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends \"res://Plant.gd\"
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	add_to_group(\"grass\")
+
+func _init_plant():
+	BASE_HEALTH = 500
+	health = 0
+
+func _create_new_plant(position):
+	get_node(\"..\").create_new_grass(position)
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+#func _process(delta):
+#	pass
+"
+
+[sub_resource type="Gradient" id=2]
+offsets = PoolRealArray( 0.670968, 0.864516, 1 )
+colors = PoolColorArray( 0.293827, 0.661654, 0.191259, 1, 0, 0, 0, 1, 1, 1, 1, 1 )
+
+[sub_resource type="GradientTexture" id=3]
+gradient = SubResource( 2 )
+
+[node name="Grass1" type="StaticBody2D"]
+script = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = SubResource( 3 )
+region_enabled = true
+region_rect = Rect2( -5, -5, 10, 10 )
