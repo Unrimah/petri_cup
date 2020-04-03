@@ -14,8 +14,8 @@ func _init_animal():
 	FUCKING_HEALTH = 1200
 	HUNGRY_HEALTH = 700
 	SEARCH_RANGE = 700
-	EATING_DISTANCE = 40
-	COPULATING_DISTANCE = 40
+	EATING_DISTANCE = 10
+	COPULATING_DISTANCE = 10
 	COPULATION_LOSS = HUNGRY_HEALTH / 2
 	COPULATION_PERIOD = 2000
 	POPULATION_LIMIT = 4
@@ -28,7 +28,7 @@ func _create_new_animal(position):
 "
 
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 25, 25 )
+extents = Vector2( 5, 5 )
 
 [node name="Wolf1" type="RigidBody2D"]
 script = SubResource( 1 )
@@ -37,4 +37,5 @@ script = SubResource( 1 )
 shape = SubResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
+scale = Vector2( 0.2, 0.2 )
 texture = ExtResource( 1 )

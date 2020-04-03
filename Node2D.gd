@@ -1,7 +1,7 @@
 extends Node2D
 
 const X_RES = 1200
-const Y_RES = 600
+const Y_RES = 680
 
 const NUM_GRASS = 20
 const NUM_RABBITS = 10

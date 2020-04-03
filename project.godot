@@ -22,6 +22,7 @@ config/icon="res://icon.png"
 [display]
 
 window/size/width=1200
+window/size/height=680
 window/size/resizable=false
 
 [physics]

@@ -27,4 +27,4 @@ script = SubResource( 1 )
 [node name="Sprite" type="Sprite" parent="."]
 texture = SubResource( 3 )
 region_enabled = true
-region_rect = Rect2( -25, -25, 50, 50 )
+region_rect = Rect2( -5, -5, 10, 10 )
