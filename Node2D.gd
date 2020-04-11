@@ -2,11 +2,13 @@ extends Node2D
 
 const X_RES = 1200
 const Y_RES = 680
+const FPS = 60
+
+const GRASS_DELAY = 10
 
 const NUM_GRASS = 40
 const NUM_RABBITS = 40
 const NUM_WOLVES = 4
-const GRASS_DELAY = 10
 
 var grass_scene = preload("res://Grass1.tscn")
 var rabbit_scene = preload("res://Rabbit1.tscn")
