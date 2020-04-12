@@ -2,11 +2,15 @@ extends RigidBody2D
 
 var X_RES
 var Y_RES
+var FPS
 
 var MAX_HEALTH
 var BASE_HEALTH
 var FUCKING_HEALTH
 var HUNGRY_HEALTH
+var SPEED_RUN
+var SPEED_WALK
+var SPEED_CRAWL
 var SEARCH_RANGE
 var EATING_DISTANCE
 var COPULATING_DISTANCE
@@ -27,6 +31,7 @@ enum ACT {
 var health
 var copulation_timer
 var life_timer
+var walk_position
 
 func _init_animal():
 	pass
@@ -39,18 +44,25 @@ func _ready():
 	life_timer = LIFE_PERIOD
 	X_RES = get_node("..").X_RES
 	Y_RES = get_node("..").Y_RES
+	FPS = get_node("..").FPS
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	match select_action():
 		ACT.WALK:
-			animal_walk()
+			animal_walk(delta)
 		ACT.COPULATE:
-			animal_to_fuck()
-		ACT.DIE:
-			animal_die()
+			flush_walk_position()
+			animal_to_fuck(delta)
 		ACT.TO_EAT:
-			animal_to_eat()		
+			flush_walk_position()
+			animal_to_eat(delta)
+		ACT.DIE:
+			flush_walk_position()
+			animal_die()
+
+func flush_walk_position():
+	walk_position = Vector2(0, 0)
 
 func select_action():
 	life_timer -= 1
@@ -68,7 +80,7 @@ func select_action():
 	return ACT.TO_EAT
 	
 	
-func animal_to_eat():
+func animal_to_eat(delta):
 	var food_list = get_tree().get_nodes_in_group(FOOD_GROUP)#Groups of food
 	var distance = SEARCH_RANGE
 	var direction
@@ -79,23 +91,24 @@ func animal_to_eat():
 			distance = food_distance
 			TARGET = food
 	if distance == SEARCH_RANGE:
-		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
-	else:
-		direction = Vector2(0,0)
-		if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
-			direction.x = 1
-		if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
-			direction.y = 1
-		if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
-			direction.x = -1
-		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
-			direction.y = -1
+		animal_walk(delta)
+		return
 	if distance < EATING_DISTANCE:
 		animal_eat(TARGET)
-	else:
-		global_translate(direction)
+		return
+	direction = Vector2(0,0)
+	if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
+		direction.x = 1
+	if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
+		direction.y = 1
+	if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
+		direction.x = -1
+	if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
+		direction.y = -1
+	direction *= SPEED_RUN * delta
+	global_translate(direction)
 
-func animal_to_fuck():
+func animal_to_fuck(delta):
 	var animals_list = get_tree().get_nodes_in_group(SELF_GROUP)
 	var distance = SEARCH_RANGE
 	var direction
@@ -113,24 +126,42 @@ func animal_to_fuck():
 			distance = animal_distance
 			TARGET = animal
 	if (distance == SEARCH_RANGE) or (animals_in_range >= POPULATION_LIMIT):
-		direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
-	else:
-		direction = Vector2(0,0)
-		if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
-			direction.x = 1
-		if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
-			direction.y = 1
-		if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
-			direction.x = -1
-		if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
-			direction.y = -1
+		animal_walk(delta)
+		return
 	if (animals_in_range < POPULATION_LIMIT) and (distance < COPULATING_DISTANCE):
 		animal_copulate(TARGET)
-	else:
-		global_translate(direction)
+		return
+	direction = Vector2(0,0)
+	if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
+		direction.x = 1
+	if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
+		direction.y = 1
+	if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
+		direction.x = -1
+	if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
+		direction.y = -1
+	direction *= SPEED_RUN * delta
+	global_translate(direction)
 
-func animal_walk():
-	var direction = Vector2(2*(randi() % 2)-1,2*(randi() % 2)-1)
+func animal_walk(delta):
+	if (self.position.distance_to(walk_position) < 2):
+		flush_walk_position()
+	if (walk_position == Vector2(0, 0)):
+		var walk_direction = randi() % 360
+		var walk_distance = randi() % SEARCH_RANGE
+		var X = walk_distance * sin(walk_direction) + self.position.x
+		var Y = walk_distance * cos(walk_direction) + self.position.y
+		walk_position = Vector2(X, Y)
+	var direction = Vector2(0,0)
+	if (self.position.x < walk_position.x) and (self.position.x < X_RES):
+		direction.x = 1
+	if (self.position.y < walk_position.y) and (self.position.y < Y_RES):
+		direction.y = 1
+	if (self.position.x > walk_position.x) and (self.position.x >= 0):
+		direction.x = -1
+	if (self.position.y > walk_position.y) and (self.position.y >= 0):
+		direction.y = -1
+	direction *= SPEED_WALK * delta
 	global_translate(direction)
 
 func animal_eat(food):
@@ -156,4 +187,3 @@ func set_place(x, y):
 	
 func animal_die():
 	queue_free()
-
