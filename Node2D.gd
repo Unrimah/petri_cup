@@ -2,9 +2,9 @@ extends Node2D
 
 const X_RES = 1200
 const Y_RES = 680
-const FPS = 60
+const FPS = 300 # 60 default
 
-const GRASS_DELAY = 10
+const GRASS_DELAY = .2
 
 const NUM_GRASS = 100
 const NUM_RABBITS = 40
@@ -37,7 +37,7 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	grass_counter += 1
-	if grass_counter >= GRASS_DELAY:
+	if grass_counter >= GRASS_DELAY * FPS * delta:
 		grass_counter = 0
 		var position = Vector2(randi() % X_RES, randi() % Y_RES)
 		create_new_grass(position)

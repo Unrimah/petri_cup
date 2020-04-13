@@ -91,7 +91,7 @@ func animal_to_eat(delta):
 	var direction
 	var TARGET
 	
-	health -= CONSUMPTION_RUN * delta
+	health -= CONSUMPTION_RUN * FPS * delta
 	
 	for food in food_list:
 		var food_distance = self.position.distance_to(food.position)
@@ -105,7 +105,7 @@ func animal_to_eat(delta):
 		animal_eat(TARGET)
 		return
 	direction = Vector2((TARGET.position.x - position.x)/distance,(TARGET.position.y - position.y)/distance)
-	direction *= SPEED_RUN * delta
+	direction *= SPEED_RUN * FPS * delta
 	global_translate(direction)
 
 func animal_to_fuck(delta):
@@ -114,7 +114,7 @@ func animal_to_fuck(delta):
 	var direction
 	var TARGET
 
-	health -= CONSUMPTION_RUN * delta
+	health -= CONSUMPTION_RUN * FPS * delta
 
 	var animals_in_range = 1
 	for animal in animals_list:
@@ -135,11 +135,11 @@ func animal_to_fuck(delta):
 		animal_copulate(TARGET)
 		return
 	direction = Vector2((TARGET.position.x - position.x)/distance,(TARGET.position.y - position.y)/distance)
-	direction *= SPEED_RUN * delta
+	direction *= SPEED_RUN * FPS * delta
 	global_translate(direction)
 
 func animal_walk(delta):
-	health -= CONSUMPTION_WALK * delta
+	health -= CONSUMPTION_WALK * FPS * delta
 	if (self.position.distance_to(walk_position) < 2):
 		flush_walk_position()
 	if (walk_position == Vector2(0, 0)):
@@ -150,7 +150,7 @@ func animal_walk(delta):
 		walk_position = Vector2(X, Y)
 	var walk_distance = sqrt(pow((walk_position.x - position.x), 2) + pow((walk_position.y - position.y), 2))
 	var direction = Vector2((walk_position.x - position.x)/walk_distance,(walk_position.y - position.y)/walk_distance)
-	direction *= SPEED_WALK * delta
+	direction *= SPEED_WALK * FPS * delta
 	global_translate(direction)
 
 func animal_eat(food):
