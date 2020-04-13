@@ -8,7 +8,7 @@ var MAX_HEALTH
 var BASE_HEALTH
 var FUCKING_HEALTH
 var HUNGRY_HEALTH
-var SPEED_RUN
+var SPEED_RUN # Pixels / sec
 var SPEED_WALK
 var SPEED_CRAWL
 var CONSUMPTION_RUN
@@ -45,9 +45,9 @@ func _init_animal():
 func _ready():
 	_init_animal()
 	FPS = get_node("..").FPS
-	health = HUNGRY_HEALTH * FPS
-	copulation_timer = COPULATION_PERIOD *FPS
-	life_timer = LIFE_PERIOD * FPS
+	health = HUNGRY_HEALTH
+	copulation_timer = COPULATION_PERIOD
+	life_timer = LIFE_PERIOD
 	X_RES = get_node("..").X_RES
 	Y_RES = get_node("..").Y_RES
 	walk_position = Vector2(0, 0)
@@ -71,14 +71,14 @@ func flush_walk_position():
 	walk_position = Vector2(0, 0)
 
 func select_action(delta):
-	life_timer -= FPS * delta
+	life_timer -= delta
 	if life_timer == 0:
 		return ACT.DIE
 	if copulation_timer > 0:
-		copulation_timer -= 1
-	elif health >= FUCKING_HEALTH * FPS:
+		copulation_timer -= delta
+	elif health >= FUCKING_HEALTH:
 		return ACT.COPULATE
-	if health >= HUNGRY_HEALTH * FPS:
+	if health >= HUNGRY_HEALTH:
 		return ACT.WALK
 	if health <  1:
 		return ACT.DIE
@@ -91,7 +91,7 @@ func animal_to_eat(delta):
 	var direction
 	var TARGET
 	
-	health -= CONSUMPTION_RUN * FPS * delta
+	health -= CONSUMPTION_RUN * delta
 	
 	for food in food_list:
 		var food_distance = self.position.distance_to(food.position)
@@ -105,7 +105,7 @@ func animal_to_eat(delta):
 		animal_eat(TARGET)
 		return
 	direction = Vector2((TARGET.position.x - position.x)/distance,(TARGET.position.y - position.y)/distance)
-	direction *= SPEED_RUN * FPS * delta
+	direction *= SPEED_RUN * delta
 	global_translate(direction)
 
 func animal_to_fuck(delta):
@@ -114,7 +114,7 @@ func animal_to_fuck(delta):
 	var direction
 	var TARGET
 
-	health -= CONSUMPTION_RUN * FPS * delta
+	health -= CONSUMPTION_RUN * delta
 
 	var animals_in_range = 1
 	for animal in animals_list:
@@ -135,28 +135,32 @@ func animal_to_fuck(delta):
 		animal_copulate(TARGET)
 		return
 	direction = Vector2((TARGET.position.x - position.x)/distance,(TARGET.position.y - position.y)/distance)
-	direction *= SPEED_RUN * FPS * delta
+	direction *= SPEED_RUN * delta
 	global_translate(direction)
 
 func animal_walk(delta):
-	health -= CONSUMPTION_WALK * FPS * delta
+	health -= CONSUMPTION_WALK * delta
 	if (self.position.distance_to(walk_position) < 2):
 		flush_walk_position()
 	if (walk_position == Vector2(0, 0)):
 		var walk_direction = randf() * 2 * PI
-		var walk_distance = randi() % SEARCH_RANGE + 1 # To prevent X/0
+		var walk_distance = randi() % (SEARCH_RANGE / 2) + 1 # To prevent X/0
 		var X = walk_distance * sin(walk_direction) + self.position.x
+		if X < 0: X = 0
+		if X > X_RES: X = X_RES
 		var Y = walk_distance * cos(walk_direction) + self.position.y
+		if Y < 0: Y = 0
+		if Y > Y_RES: Y = Y_RES
 		walk_position = Vector2(X, Y)
 	var walk_distance = sqrt(pow((walk_position.x - position.x), 2) + pow((walk_position.y - position.y), 2))
-	var direction = Vector2((walk_position.x - position.x)/walk_distance,(walk_position.y - position.y)/walk_distance)
-	direction *= SPEED_WALK * FPS * delta
-	global_translate(direction)
+	var transition = Vector2((walk_position.x - position.x)/walk_distance,(walk_position.y - position.y)/walk_distance)
+	transition *= SPEED_WALK * delta
+	global_translate(transition)
 
 func animal_eat(food):
 	health += food.BASE_HEALTH + food.health
-	if health > MAX_HEALTH * FPS:
-		health = MAX_HEALTH * FPS
+	if health > MAX_HEALTH:
+		health = MAX_HEALTH
 	food.queue_free()
 	
 func _create_new_animal(position):
@@ -165,10 +169,10 @@ func _create_new_animal(position):
 func animal_copulate(animal):
 	if animal.copulation_timer > 0:
 		return
-	copulation_timer = COPULATION_PERIOD * FPS
-	health -= COPULATION_LOSS * FPS
-	animal.copulation_timer = COPULATION_PERIOD * FPS
-	animal.health -= COPULATION_LOSS * FPS
+	copulation_timer = COPULATION_PERIOD
+	health -= COPULATION_LOSS
+	animal.copulation_timer = COPULATION_PERIOD
+	animal.health -= COPULATION_LOSS
 	_create_new_animal(self.position)
 	
 func set_place(x, y):

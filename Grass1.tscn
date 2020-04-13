@@ -8,7 +8,7 @@ func _ready():
 	add_to_group(\"grass\")
 
 func _init_plant():
-	BASE_HEALTH = 400
+	BASE_HEALTH = 7
 	health = 0
 
 func _create_new_plant(position):
