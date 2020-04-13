@@ -96,15 +96,16 @@ func animal_to_eat(delta):
 	if distance < EATING_DISTANCE:
 		animal_eat(TARGET)
 		return
-	direction = Vector2(0,0)
-	if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
-		direction.x = 1
-	if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
-		direction.y = 1
-	if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
-		direction.x = -1
-	if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
-		direction.y = -1
+#	direction = Vector2(0,0)
+	direction = Vector2((TARGET.position.x - position.x)/distance,(TARGET.position.y - position.y)/distance)
+#	if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
+#		direction.x = 1
+#	if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
+#		direction.y = 1
+#	if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
+#		direction.x = -1
+#	if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
+#		direction.y = -1
 	direction *= SPEED_RUN * delta
 	global_translate(direction)
 
@@ -131,36 +132,34 @@ func animal_to_fuck(delta):
 	if (animals_in_range < POPULATION_LIMIT) and (distance < COPULATING_DISTANCE):
 		animal_copulate(TARGET)
 		return
-	direction = Vector2(0,0)
-	if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
-		direction.x = 1
-	if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
-		direction.y = 1
-	if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
-		direction.x = -1
-	if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
-		direction.y = -1
+	direction = Vector2((TARGET.position.x - position.x)/distance,(TARGET.position.y - position.y)/distance)
+#	direction = Vector2(0,0)
+#	if (self.position.x < TARGET.position.x) and (self.position.x < X_RES):
+#		direction.x = 1
+#	if (self.position.y < TARGET.position.y) and (self.position.y < Y_RES):
+#		direction.y = 1
+#	if (self.position.x > TARGET.position.x) and (self.position.x >= 0):
+#		direction.x = -1
+#	if (self.position.y > TARGET.position.y) and (self.position.y >= 0):
+#		direction.y = -1
 	direction *= SPEED_RUN * delta
 	global_translate(direction)
 
 func animal_walk(delta):
 	if (self.position.distance_to(walk_position) < 2):
 		flush_walk_position()
+#	var X
+#	var Y
+#	var walk_distance
+#	var walk_direction
 	if (walk_position == Vector2(0, 0)):
-		var walk_direction = randi() % 360
-		var walk_distance = randi() % SEARCH_RANGE
+		var walk_direction = randf() * 2 * PI
+		var walk_distance = randi() % SEARCH_RANGE + 1 # To prevent X/0
 		var X = walk_distance * sin(walk_direction) + self.position.x
 		var Y = walk_distance * cos(walk_direction) + self.position.y
 		walk_position = Vector2(X, Y)
-	var direction = Vector2(0,0)
-	if (self.position.x < walk_position.x) and (self.position.x < X_RES):
-		direction.x = 1
-	if (self.position.y < walk_position.y) and (self.position.y < Y_RES):
-		direction.y = 1
-	if (self.position.x > walk_position.x) and (self.position.x >= 0):
-		direction.x = -1
-	if (self.position.y > walk_position.y) and (self.position.y >= 0):
-		direction.y = -1
+	var walk_distance = sqrt(pow((walk_position.x - position.x), 2) + pow((walk_position.y - position.y), 2))
+	var direction = Vector2((walk_position.x - position.x)/walk_distance,(walk_position.y - position.y)/walk_distance)
 	direction *= SPEED_WALK * delta
 	global_translate(direction)
 

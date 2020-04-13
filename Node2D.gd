@@ -6,7 +6,7 @@ const FPS = 60
 
 const GRASS_DELAY = 10
 
-const NUM_GRASS = 40
+const NUM_GRASS = 100
 const NUM_RABBITS = 40
 const NUM_WOLVES = 4
 
