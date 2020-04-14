@@ -8,9 +8,14 @@ var MAX_HEALTH
 var BASE_HEALTH
 var FUCKING_HEALTH
 var HUNGRY_HEALTH
-var SPEED_RUN
+var SPEED_RUN # Pixels / sec
 var SPEED_WALK
 var SPEED_CRAWL
+var CONSUMPTION_RUN
+var CONSUMPTION_WALK
+var CONSUMPTION_CRAWL
+var CONSUMPTION_IDLE
+var CONSUMPTION_SLEEP
 var SEARCH_RANGE
 var EATING_DISTANCE
 var COPULATING_DISTANCE
@@ -39,16 +44,17 @@ func _init_animal():
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	_init_animal()
+	FPS = get_node("..").FPS
 	health = HUNGRY_HEALTH
 	copulation_timer = COPULATION_PERIOD
 	life_timer = LIFE_PERIOD
 	X_RES = get_node("..").X_RES
 	Y_RES = get_node("..").Y_RES
-	FPS = get_node("..").FPS
+	walk_position = Vector2(0, 0)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	match select_action():
+	match select_action(delta):
 		ACT.WALK:
 			animal_walk(delta)
 		ACT.COPULATE:
@@ -64,13 +70,12 @@ func _process(delta):
 func flush_walk_position():
 	walk_position = Vector2(0, 0)
 
-func select_action():
-	life_timer -= 1
+func select_action(delta):
+	life_timer -= delta
 	if life_timer == 0:
 		return ACT.DIE
-	health -= 1
 	if copulation_timer > 0:
-		copulation_timer -= 1
+		copulation_timer -= delta
 	elif health >= FUCKING_HEALTH:
 		return ACT.COPULATE
 	if health >= HUNGRY_HEALTH:
@@ -85,6 +90,9 @@ func animal_to_eat(delta):
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
+	
+	health -= CONSUMPTION_RUN * delta
+	
 	for food in food_list:
 		var food_distance = self.position.distance_to(food.position)
 		if distance > food_distance:
@@ -105,6 +113,9 @@ func animal_to_fuck(delta):
 	var distance = SEARCH_RANGE
 	var direction
 	var TARGET
+
+	health -= CONSUMPTION_RUN * delta
+
 	var animals_in_range = 1
 	for animal in animals_list:
 		if animal.get_instance_id() == self.get_instance_id():
@@ -128,18 +139,23 @@ func animal_to_fuck(delta):
 	global_translate(direction)
 
 func animal_walk(delta):
+	health -= CONSUMPTION_WALK * delta
 	if (self.position.distance_to(walk_position) < 2):
 		flush_walk_position()
 	if (walk_position == Vector2(0, 0)):
 		var walk_direction = randf() * 2 * PI
-		var walk_distance = randi() % SEARCH_RANGE + 1 # To prevent X/0
+		var walk_distance = randi() % (SEARCH_RANGE / 2) + 1 # To prevent X/0
 		var X = walk_distance * sin(walk_direction) + self.position.x
+		if X < 0: X = 0
+		if X > X_RES: X = X_RES
 		var Y = walk_distance * cos(walk_direction) + self.position.y
+		if Y < 0: Y = 0
+		if Y > Y_RES: Y = Y_RES
 		walk_position = Vector2(X, Y)
 	var walk_distance = sqrt(pow((walk_position.x - position.x), 2) + pow((walk_position.y - position.y), 2))
-	var direction = Vector2((walk_position.x - position.x)/walk_distance,(walk_position.y - position.y)/walk_distance)
-	direction *= SPEED_WALK * delta
-	global_translate(direction)
+	var transition = Vector2((walk_position.x - position.x)/walk_distance,(walk_position.y - position.y)/walk_distance)
+	transition *= SPEED_WALK * delta
+	global_translate(transition)
 
 func animal_eat(food):
 	health += food.BASE_HEALTH + food.health
