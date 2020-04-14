@@ -40,7 +40,10 @@ var walk_position
 
 func _init_animal():
 	pass
-	
+
+func _create_new_animal(position):
+	pass
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	_init_animal()
@@ -84,12 +87,6 @@ func select_action(delta):
 		return ACT.DIE
 	return ACT.TO_EAT
 
-func loop_distance_to(trg):
-	pass
-
-func loop_direction_to(trg):
-	pass
-	
 func loop_closest_position(trg_pos):
 	var ret_pos = trg_pos
 	if (abs(position.x - trg_pos.x + X_RES) < abs(position.x - trg_pos.x)):
@@ -128,7 +125,6 @@ func animal_to_eat(delta):
 	var trg_loop_pos
 	
 	health -= CONSUMPTION_RUN * delta
-	
 	for food in food_list:
 		trg_loop_pos = loop_closest_position(food.position)
 		var food_distance = self.position.distance_to(trg_loop_pos)
@@ -155,7 +151,6 @@ func animal_to_fuck(delta):
 	var trg_loop_pos
 
 	health -= CONSUMPTION_RUN * delta
-
 	var animals_in_range = 1
 	for animal in animals_list:
 		if animal.get_instance_id() == self.get_instance_id():
@@ -189,11 +184,7 @@ func animal_walk(delta):
 		var walk_direction = randf() * 2 * PI
 		var walk_distance = randi() % (SEARCH_RANGE / 2) + 1 # To prevent X/0
 		var X = normalize_X(walk_distance * sin(walk_direction) + self.position.x)
-#		if X < 0: X = 0
-#		if X > X_RES: X = X_RES
 		var Y = normalize_Y(walk_distance * cos(walk_direction) + self.position.y)
-#		if Y < 0: Y = 0
-#		if Y > Y_RES: Y = Y_RES
 		walk_position = Vector2(X, Y)
 		walk_position = loop_closest_position(walk_position)
 	var walk_distance = sqrt(pow((walk_position.x - position.x), 2) + pow((walk_position.y - position.y), 2))
@@ -207,9 +198,6 @@ func animal_eat(food):
 	if health > MAX_HEALTH:
 		health = MAX_HEALTH
 	food.queue_free()
-	
-func _create_new_animal(position):
-	pass
 	
 func animal_copulate(animal):
 	if animal.copulation_timer > 0:
