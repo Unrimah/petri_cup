@@ -91,10 +91,20 @@ func loop_direction_to(trg):
 	pass
 	
 func loop_closest_position(trg_pos):
-	return trg_pos
+	var ret_pos = trg_pos
+	if (abs(position.x - trg_pos.x + X_RES) < abs(position.x - trg_pos.x)):
+		ret_pos.x = trg_pos.x - X_RES
+	if (abs(position.x - trg_pos.x - X_RES) < abs(position.x - trg_pos.x)):
+		ret_pos.x = trg_pos.x + X_RES
+	if (abs(position.y - trg_pos.y + Y_RES) < abs(position.y - trg_pos.y)):
+		ret_pos.y = trg_pos.y - Y_RES
+	if (abs(position.y - trg_pos.y - Y_RES) < abs(position.y - trg_pos.y)):
+		ret_pos.y = trg_pos.y + Y_RES
+	return ret_pos
 
 func normalize_position():
-	pass
+	position.x = normalize_X(position.x)
+	position.y = normalize_Y(position.y)
 	
 func normalize_X(value):
 	while (value < 0):
