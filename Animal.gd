@@ -47,6 +47,7 @@ func _create_new_animal(position):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	add_to_group("animals")
 	_init_animal()
 	FPS = get_node("..").FPS
 	health = HUNGRY_HEALTH
@@ -78,7 +79,7 @@ func flush_walk_position():
 
 func select_action(delta):
 	life_timer -= delta
-	if life_timer == 0:
+	if life_timer <= 0:
 		return ACT.DIE
 	if copulation_timer > 0:
 		copulation_timer -= delta
