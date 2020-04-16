@@ -11,6 +11,8 @@ const NUM_GRASS = 100
 const NUM_RABBITS = 40
 const NUM_WOLVES = 4
 
+const MAX_PLANTS = 500
+
 var grass_scene = preload("res://Grass1.tscn")
 var rabbit_scene = preload("res://Rabbit1.tscn")
 var wolf_scene = preload("res://Wolf1.tscn")
@@ -68,7 +70,7 @@ func animals_autogenesis(delta):
 			return
 		if get_tree().get_nodes_in_group("wolves").size() == 0:
 			if get_tree().get_nodes_in_group("rabbits").size() > NUM_RABBITS:
-				for i in 2:
+				for i in NUM_WOLVES:
 					var position = Vector2(randi() % X_RES, randi() % Y_RES)
 					create_new_wolf(position)
 	
@@ -76,5 +78,6 @@ func plants_autogenesis(delta):
 	plants_time_counter += delta
 	if plants_time_counter >= GRASS_DELAY:
 		plants_time_counter = 0
-		var position = Vector2(randi() % X_RES, randi() % Y_RES)
-		create_new_grass(position)
+		if get_tree().get_nodes_in_group("plants").size() < MAX_PLANTS:
+			var position = Vector2(randi() % X_RES, randi() % Y_RES)
+			create_new_grass(position)
