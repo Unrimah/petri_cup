@@ -37,6 +37,7 @@ var health
 var copulation_timer
 var life_timer
 var walk_position
+var walk_position_is_set = false
 
 func _init_animal():
 	pass
@@ -54,6 +55,7 @@ func _ready():
 	X_RES = get_node("..").X_RES
 	Y_RES = get_node("..").Y_RES
 	walk_position = Vector2(0, 0)
+	walk_position_is_set = false
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -71,7 +73,8 @@ func _process(delta):
 			animal_die()
 
 func flush_walk_position():
-	walk_position = Vector2(-1, -1)
+	walk_position_is_set = false
+	walk_position = Vector2(0, 0)
 
 func select_action(delta):
 	life_timer -= delta
@@ -180,13 +183,14 @@ func animal_walk(delta):
 	health -= CONSUMPTION_WALK * delta
 	if (self.position.distance_to(walk_position) < 2):
 		flush_walk_position()
-	if (walk_position == Vector2(-1, -1)):
+	if (!walk_position_is_set):
 		var walk_direction = randf() * 2 * PI
 		var walk_distance = randi() % (SEARCH_RANGE / 2) + 1 # To prevent X/0
 		var X = normalize_X(walk_distance * sin(walk_direction) + self.position.x)
 		var Y = normalize_Y(walk_distance * cos(walk_direction) + self.position.y)
 		walk_position = Vector2(X, Y)
 		walk_position = loop_closest_position(walk_position)
+		walk_position_is_set = true
 	var walk_distance = sqrt(pow((walk_position.x - position.x), 2) + pow((walk_position.y - position.y), 2))
 	var transition = Vector2((walk_position.x - position.x)/walk_distance,(walk_position.y - position.y)/walk_distance)
 	transition *= SPEED_WALK * delta
