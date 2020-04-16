@@ -71,7 +71,7 @@ func _process(delta):
 			animal_die()
 
 func flush_walk_position():
-	walk_position = Vector2(0, 0)
+	walk_position = Vector2(-1, -1)
 
 func select_action(delta):
 	life_timer -= delta
@@ -180,7 +180,7 @@ func animal_walk(delta):
 	health -= CONSUMPTION_WALK * delta
 	if (self.position.distance_to(walk_position) < 2):
 		flush_walk_position()
-	if (walk_position == Vector2(0, 0)):
+	if (walk_position == Vector2(-1, -1)):
 		var walk_direction = randf() * 2 * PI
 		var walk_distance = randi() % (SEARCH_RANGE / 2) + 1 # To prevent X/0
 		var X = normalize_X(walk_distance * sin(walk_direction) + self.position.x)
