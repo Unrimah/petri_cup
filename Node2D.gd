@@ -19,6 +19,7 @@ var wolf_scene = preload("res://Wolf1.tscn")
 
 var plants_time_counter
 var animals_time_counter
+var Log = Logger.get_logger("Node2D.gd", "res://logs/", "animals")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
