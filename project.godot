@@ -19,10 +19,6 @@ config/name="Petri cup project"
 run/main_scene="res://Node2D.tscn"
 config/icon="res://icon.png"
 
-[autoload]
-
-Logger="*res://logger.gd"
-
 [display]
 
 window/size/width=1200
