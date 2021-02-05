@@ -65,7 +65,7 @@ func animals_autogenesis(delta):
 	if animals_time_counter >= RABBITS_DELAY:
 		animals_time_counter = 0
 		if get_tree().get_nodes_in_group("animals").size() == 0:
-			for i in 4:
+			for i in NUM_RABBITS:
 				var position = Vector2(randi() % X_RES, randi() % Y_RES)
 				create_new_rabbit(position)
 			return
