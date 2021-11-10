@@ -62,7 +62,7 @@ func _ready():
 	walk_position = Vector2(0, 0)
 	walk_position_is_set = false
 	ID = Log.get_id()
-	Log.info(String(ID) + " animal born")
+	Log.info("#" + String(ID) + " animal born")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -223,5 +223,5 @@ func set_place(x, y):
 	self.position = Vector2(x, y)
 	
 func animal_die():
-	Log.info(String(ID) + " animal dead")
+	Log.info("#" + String(ID) + " animal dead")
 	queue_free()
