@@ -3,6 +3,7 @@ extends RigidBody2D
 var X_RES
 var Y_RES
 var FPS
+var ID
 
 var MAX_HEALTH
 var BASE_HEALTH
@@ -38,6 +39,7 @@ var copulation_timer
 var life_timer
 var walk_position
 var walk_position_is_set = false
+var Log # = Logger.get_logger("Animals.gd", "res://logs/", "animals")
 
 func _init_animal():
 	pass
@@ -47,6 +49,8 @@ func _create_new_animal(position):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	Log = get_node("..").Log
+	Log.start("_ready()")
 	add_to_group("animals")
 	_init_animal()
 	FPS = get_node("..").FPS
@@ -57,6 +61,8 @@ func _ready():
 	Y_RES = get_node("..").Y_RES
 	walk_position = Vector2(0, 0)
 	walk_position_is_set = false
+	ID = Log.get_id()
+	Log.info("#" + String(ID) + " animal born")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -217,4 +223,5 @@ func set_place(x, y):
 	self.position = Vector2(x, y)
 	
 func animal_die():
+	Log.info("#" + String(ID) + " animal dead")
 	queue_free()

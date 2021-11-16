@@ -19,6 +19,7 @@ var wolf_scene = preload("res://Wolf1.tscn")
 
 var plants_time_counter
 var animals_time_counter
+var Log = Logger.get_logger("Node2D.gd", "res://logs/", "animals")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -64,7 +65,7 @@ func animals_autogenesis(delta):
 	if animals_time_counter >= RABBITS_DELAY:
 		animals_time_counter = 0
 		if get_tree().get_nodes_in_group("animals").size() == 0:
-			for i in 4:
+			for i in NUM_RABBITS:
 				var position = Vector2(randi() % X_RES, randi() % Y_RES)
 				create_new_rabbit(position)
 			return
